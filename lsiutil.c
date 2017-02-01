@@ -72,7 +72,7 @@ int optind;
 #define strncasecmp strnicmp
 #include "inc/ntddscsi.h"
 #endif
-#if __linux__ || __sparc__ || __irix__ || __alpha__
+#if __linux__ || __sparc__ || __x86_64__ || __irix__ || __alpha__
 #include <stdarg.h>
 #include <unistd.h>
 #include <strings.h>
@@ -110,7 +110,7 @@ typedef int HANDLE;
 #define REG_DIAG_WRITE 6
 #define REG_DIAG_WRITE_BYTE 7
 #endif
-#if __sparc__
+#if __sparc__ || __x86_64__
 #include <libdevinfo.h>
 #include <stddef.h>
 #include <sys/param.h>
@@ -213,7 +213,7 @@ typedef struct { U32 Low; U32 High; } U64;
 #define U16 _U16
 #define U32 _U32
 #endif
-#if WIN32 || __linux__ || __sparc__ || DOS || EFI
+#if WIN32 || __linux__ || __sparc__ || __x86_64__ || DOS || EFI
 #pragma pack(1)
 #include "lsi/mpi.h"
 #include "lsi/mpi_ioc.h"
@@ -278,7 +278,7 @@ typedef struct
 } IOCTL_DIAG_BUFFER;
 #endif
 #endif
-#if __sparc__
+#if __sparc__ || __x86_64__
 #define TARGET_MPTx
 typedef uint8_t  UINT8;
 typedef uint16_t UINT16;
@@ -400,7 +400,7 @@ typedef U64 u64;
 #define set16x_be(x) __cpu_to_be16(x)
 #define set32x_be(x) __cpu_to_be32(x)
 #endif
-#if __sparc__ || __irix__
+#if __sparc__ || __x86_64__ || __irix__
 #if i386
 #define get16(x) (x)
 #define get32(x) (x)
@@ -560,7 +560,7 @@ typedef struct
 #if WIN32
     char             driverName[32];
 #endif
-#if __sparc__
+#if __sparc__ || __x86_64__
     char             pathName[PATH_MAX];
 #endif
     HANDLE           fileHandle;
@@ -743,7 +743,7 @@ int                  mappedDevHandle;
 int                  mappedValue;
 
 
-#if __sparc__
+#if __sparc__ || __x86_64__
 int                  scsi_vhci_fd;
 
 
@@ -925,7 +925,7 @@ void outputPaged(FILE *fp, char *buffer);
 int printfPaged(const char *format, ...);
 int fprintfPaged(FILE *fp, const char *format, ...);
 char *logPrefix(MPT_PORT *port);
-#if __sparc__
+#if __sparc__ || __x86_64__
 int getNodeInfo(di_node_t node, void *arg);
 #endif
 int checkReady(MPT_PORT *port);
@@ -1100,7 +1100,7 @@ int doDisplayTransferStatisticsAll(int numPorts, MPT_PORT *ports[], int interval
 int isRaidVolume(MPT_PORT *port, int bus, int target);
 int isRaidVolume2(MPT_PORT *port, int bus, int target);
 void convertBusTarget(MPT_PORT *port, int *bus, int *target, int lun);
-#if __sparc__
+#if __sparc__ || __x86_64__
 void cachePathLinks(char *prefix, char *suffix, NAME_LINK **cacheOut, int *countOut);
 int findPathLink(MPT_PORT *port, char *prefix, NAME_LINK *cache, int count, char *path, char *buf);
 #endif
@@ -2424,7 +2424,7 @@ main(int argc, char *argv[])
 }
 
 
-#if __sparc__
+#if __sparc__ || __x86_64__
 int
 getNodeInfo(di_node_t node, void *arg)
 {
@@ -2552,7 +2552,7 @@ int
 checkOperational(MPT_PORT *port, int flag)
 {
 #if REGISTER_ACCESS
-#if WIN32 || __linux__ || __sparc__
+#if WIN32 || __linux__ || __sparc__ || __x86_64__
     U32      data;
 
     if (doReadRegister(port, MPI_DOORBELL_OFFSET, &data) == 1)
@@ -3147,7 +3147,7 @@ probe_again:
             close(globalFileHandle2);
     }
 #endif
-#if __sparc__
+#if __sparc__ || __x86_64__
     int              numPorts;
     FILE            *pathFile;
     char             pathEntry[PATH_MAX];
@@ -3912,7 +3912,7 @@ closePorts(int numPorts)
     if (osDeviceState)
         free(osDeviceState);
 
-#if __sparc__
+#if __sparc__ || __x86_64__
     if (scsi_vhci_fd >= 0)
         close(scsi_vhci_fd);
 
@@ -3946,7 +3946,7 @@ closePort(MPT_PORT *port)
 #if WIN32
     CloseHandle(port->fileHandle);
 #endif
-#if __sparc__ || __irix__
+#if __sparc__ || __x86_64__ || __irix__
     close(port->fileHandle);
 #endif
 #if DOS
@@ -4680,7 +4680,7 @@ doPort(MPT_PORT *port)
     {
         if (!ready || port->notOperational)
         {
-#if (WIN32 || __linux__ || __sparc__ || DOS || EFI) && REGISTER_ACCESS
+#if (WIN32 || __linux__ || __sparc__ || __x86_64__ || DOS || EFI) && REGISTER_ACCESS
             printf("50.  Dump MPT registers\n");
             printf("51.  Dump chip memory regions\n");
             printf("52.  Read/modify chip memory locations\n");
@@ -4772,17 +4772,17 @@ EXP             printf("37.  Force full discovery\n");
 #if DOS || EFI
             printf("39.  Force firmware download boot\n");
 #endif
-#if WIN32 || __linux__ || __sparc__
+#if WIN32 || __linux__ || __sparc__ || __x86_64__
 EXP         printf("40.  Display current events\n");
 #endif
             if (port->pidType == MPI_FW_HEADER_PID_TYPE_FC)
             {
 EXP             printf("41.  Display transfer statistics\n");
             }
-#if WIN32 || __linux__ || __sparc__
+#if WIN32 || __linux__ || __sparc__ || __x86_64__
             printf("42.  Display operating system names for devices\n");
 #endif
-#if WIN32 || LINUX_DIAG || __sparc__
+#if WIN32 || LINUX_DIAG || __sparc__ || __x86_64__
             if (port->capabilities & (MPI_IOCFACTS_CAPABILITY_DIAG_TRACE_BUFFER |
                                       MPI_IOCFACTS_CAPABILITY_SNAPSHOT_BUFFER))
             {
@@ -4802,7 +4802,7 @@ EXP         printf("46.  Upload FLASH section\n");
 EXP         printf("47.  Display version information\n");
 EXP         printf("48.  Display chip VPD information\n");
 EXP         printf("49.  Program chip VPD information\n");
-#if (WIN32 || __linux__ || __sparc__ || DOS || EFI) && REGISTER_ACCESS
+#if (WIN32 || __linux__ || __sparc__ || __x86_64__ || DOS || EFI) && REGISTER_ACCESS
 EXP         printf("50.  Dump MPT registers\n");
 EXP         printf("51.  Dump chip memory regions\n");
 EXP         printf("52.  Read/modify chip memory locations\n");
@@ -4954,7 +4954,7 @@ doPortOption(MPT_PORT *port, int option)
     {
         switch (option)
         {
-#if (WIN32 || __linux__ || __sparc__ || DOS || EFI) && REGISTER_ACCESS
+#if (WIN32 || __linux__ || __sparc__ || __x86_64__ || DOS || EFI) && REGISTER_ACCESS
         case 50:
             doDumpRegisters(port);
             break;
@@ -5443,7 +5443,7 @@ EXP MPI1        printf("42.  Change physical disk settings\n");
         doFirmwareDownloadBoot(port);
         break;
 #endif
-#if WIN32 || __linux__ || __sparc__
+#if WIN32 || __linux__ || __sparc__ || __x86_64__
     case 40:
         doDisplayCurrentEvents(port);
         break;
@@ -5456,12 +5456,12 @@ EXP MPI1        printf("42.  Change physical disk settings\n");
         }
         printf("Invalid selection!\n");
         break;
-#if WIN32 || __linux__ || __sparc__
+#if WIN32 || __linux__ || __sparc__ || __x86_64__
     case 42:
         doDisplayOsDeviceNames(port);
         break;
 #endif
-#if WIN32 || LINUX_DIAG || __sparc__
+#if WIN32 || LINUX_DIAG || __sparc__ || __x86_64__
     case 43:
         if (port->capabilities & (MPI_IOCFACTS_CAPABILITY_DIAG_TRACE_BUFFER |
                                   MPI_IOCFACTS_CAPABILITY_SNAPSHOT_BUFFER))
@@ -5514,7 +5514,7 @@ EXP MPI1        printf("42.  Change physical disk settings\n");
             fprintf(logFile, "%s:  Program VPD Information:  %s\n",
                     logPrefix(port), t ? "PASS" : "FAIL");
         break;
-#if (WIN32 || __linux__ || __sparc__ || DOS || EFI) && REGISTER_ACCESS
+#if (WIN32 || __linux__ || __sparc__ || __x86_64__ || DOS || EFI) && REGISTER_ACCESS
     case 50:
         doDumpRegisters(port);
         break;
@@ -21955,7 +21955,7 @@ eventQuery(MPT_PORT *port, int *entries, int *types)
         types[3] = eventquery.event_types[3];
     }
 #endif
-#if __sparc__
+#if __sparc__ || __x86_64__
     int                  status;
     mptsas_event_query_t eventquery;
 
@@ -22058,7 +22058,7 @@ eventEnable(MPT_PORT *port, int *types)
     if (status != 0)
         return 0;
 #endif
-#if __sparc__
+#if __sparc__ || __x86_64__
     int                   status;
     mptsas_event_enable_t eventenable;
 
@@ -22184,7 +22184,7 @@ eventReport(MPT_PORT *port, int entries, EVENT2 *events)
 
     free(eventreport);
 #endif
-#if __sparc__
+#if __sparc__ || __x86_64__
     int                  len;
     int                  status;
     SYM_EVENT_REPORT    *eventreport;
@@ -22515,7 +22515,7 @@ isRaidVolume2(MPT_PORT *port, int bus, int target)
 }
 
 
-#if WIN32 || __linux__ || __sparc__
+#if WIN32 || __linux__ || __sparc__ || __x86_64__
 
 
 #if __linux__
@@ -22679,7 +22679,7 @@ convertBusTarget(MPT_PORT *port, int *bus, int *target, int lun)
 #endif
 
 
-#if __sparc__
+#if __sparc__ || __x86_64__
 void
 cachePathLinks(char *prefix, char *suffix, NAME_LINK **cacheOut, int *countOut)
 {
@@ -22980,7 +22980,7 @@ getOsDeviceName(MPT_PORT *port, int bus, int target, int lun, char *buf, int len
         }
     }
 #endif
-#if __sparc__
+#if __sparc__ || __x86_64__
     FCDevicePage0_t  FCDevicePage0;
     int              fd;
     int              n;
@@ -23170,7 +23170,7 @@ doDisplayOsDeviceNames(MPT_PORT *port)
     if (port->hostNumber >= 0)
         printf("%s is SCSI host %d\n\n", port->portName, port->hostNumber);
 #endif
-#if __sparc__
+#if __sparc__ || __x86_64__
     if (port->hostNumber >= 0)
         printf("%s is /dev/cfg/c%d\n\n", port->portName, port->hostNumber);
 #endif
@@ -23244,7 +23244,7 @@ doDisplayOsDeviceNames(MPT_PORT *port)
 #endif
 
 
-#if WIN32 || LINUX_DIAG || __sparc__
+#if WIN32 || LINUX_DIAG || __sparc__ || __x86_64__
 
 
 int
@@ -23372,7 +23372,7 @@ diagBufferAction(MPT_PORT *port, int action, void *buf, int size)
 
     return 1;
 #endif
-#if __sparc__
+#if __sparc__ || __x86_64__
     SYM_DIAG_ACTION  diagAction;
     int              status;
 
@@ -24002,7 +24002,7 @@ doDisplayVersionInfo(MPT_PORT *port)
     struct mpt_ioctl_iocinfo     iocinfo;
     char                        *c;
 #endif
-#if __sparc__
+#if __sparc__ || __x86_64__
     SYMHI_DMI_DATA               dmiData;
     mptsas_adapter_data_t        adapterData;
 #endif
@@ -24060,7 +24060,7 @@ doDisplayVersionInfo(MPT_PORT *port)
                    port->portName, c);
     }
 #endif
-#if __sparc__
+#if __sparc__ || __x86_64__
 
     if (mpi2)
     {
@@ -24673,7 +24673,7 @@ error:
 }
 
 
-#if (WIN32 || __linux__ || __sparc__ || DOS || EFI) && REGISTER_ACCESS
+#if (WIN32 || __linux__ || __sparc__ || __x86_64__ || DOS || EFI) && REGISTER_ACCESS
 
 
 int
@@ -25790,7 +25790,7 @@ sendResetExpander(MPT_PORT *port, U8 physical_port, U64 sas_address, U32 addr, U
 }
 
 
-#if (WIN32 || __linux__ || __sparc__ || DOS || EFI) && REGISTER_ACCESS
+#if (WIN32 || __linux__ || __sparc__ || __x86_64__ || DOS || EFI) && REGISTER_ACCESS
 
 
 int
@@ -26175,7 +26175,7 @@ doReadWriteRegister(MPT_PORT *port, U32 offset, U32 *data, int command)
 
     return 0;
 #endif
-#if __sparc__
+#if __sparc__ || __x86_64__
     int                  status;
     SYM_REG_ACCESS       regAccess;
 
@@ -26259,7 +26259,7 @@ doDumpPciConfigSpace(MPT_PORT *port)
     HANDLE                       handle;
     U8                           config[256];
 #endif
-#if __sparc__
+#if __sparc__ || __x86_64__
     SYM_PCI_INFO                 pciInfo;
     int                          status;
     U8                          *config;
@@ -26326,7 +26326,7 @@ doDumpPciConfigSpace(MPT_PORT *port)
     if (read(handle, config, sizeof config) != sizeof config)
         return 0;
 #endif
-#if __sparc__
+#if __sparc__ || __x86_64__
     memset(&pciInfo, 0, sizeof pciInfo);
 
     if (mpi2)
@@ -29683,7 +29683,7 @@ getBoardInfo(MPT_PORT *port)
     int                          status;
     struct mpt_ioctl_iocinfo     iocinfo;
 #endif
-#if __sparc__
+#if __sparc__ || __x86_64__
     SYMHI_DMI_DATA               dmiData;
     mptsas_pci_info_t            pciInfo;
     int                          status;
@@ -29746,7 +29746,7 @@ getBoardInfo(MPT_PORT *port)
     device      = iocinfo.pciInfo.u.bits.deviceNumber;
     function    = iocinfo.pciInfo.u.bits.functionNumber;
 #endif
-#if __sparc__
+#if __sparc__ || __x86_64__
     if (mpi2)
     {
         memset(&pciInfo, 0, sizeof pciInfo);
@@ -30702,7 +30702,7 @@ showConfigPage(MPT_PORT *port, char *string, void *page)
 }
 
 
-#if __sparc__
+#if __sparc__ || __x86_64__
 int
 getProperty(MPT_PORT *port, char *name, char *buf, int bufLen)
 {
@@ -30750,7 +30750,7 @@ mapDevHandleToBusTarget(MPT_PORT *port, int dev_handle, int *bus, int *target)
     {
         *bus = mappedBus;
         *target = mappedTarget;
-#if __sparc__
+#if __sparc__ || __x86_64__
         if (*bus == 0xffff || *target == 0xffff)
             return 0;
 #endif
@@ -30772,7 +30772,7 @@ mapDevHandleToBusTarget(MPT_PORT *port, int dev_handle, int *bus, int *target)
         mappedTarget    = *target;
         mappedDevHandle = dev_handle;
 
-#if __sparc__
+#if __sparc__ || __x86_64__
         if (*bus == 0xffff || *target == 0xffff)
             t = 0;
 #endif
@@ -30873,7 +30873,7 @@ mapBTDH(MPT_PORT *port, int *bus, int *target, int *dev_handle)
 
     return status == 0;
 #endif
-#if __sparc__
+#if __sparc__ || __x86_64__
     int                  status;
     SYM_BTDH_MAPPING     btdhMapping;
 
@@ -30935,7 +30935,7 @@ mapBTDH(MPT_PORT *port, int *bus, int *target, int *dev_handle)
 int
 mapOsToHwTarget(MPT_PORT *port, int target)
 {
-#if __sparc__
+#if __sparc__ || __x86_64__
     if (port->pidType == MPI_FW_HEADER_PID_TYPE_FC)
     {
         char                 name[32];
@@ -32686,7 +32686,7 @@ doResetPort(MPT_PORT *port)
 
     t = status == 0;
 #endif
-#if __sparc__ || __irix__
+#if __sparc__ || __x86_64__ || __irix__
     int                  status;
 #if __irix__
     struct scsi_ha_op    scsiioctl;
@@ -32694,7 +32694,7 @@ doResetPort(MPT_PORT *port)
 
     printf("Resetting port...\n");
 
-#if __sparc__
+#if __sparc__ || __x86_64__
     if (mpi2)
         status = ioctl(port->fileHandle, MPTIOCTL_RESET_ADAPTER);
     else
@@ -33110,9 +33110,9 @@ doMptCommand(MPT_PORT *port, void *req, int reqSize, void *rep, int repSize,
 
     return status == 0;
 #endif
-#if __sparc__ || __irix__
+#if __sparc__ || __x86_64__ || __irix__
     int                      status;
-#if __sparc__
+#if __sparc__ || __x86_64__
     SYM_PASS_THRU_TIMEOUT    passThru;
 #endif
 #if __irix__
@@ -33152,13 +33152,13 @@ doMptCommand(MPT_PORT *port, void *req, int reqSize, void *rep, int repSize,
         passThru.DataOutSize    = 0;
         passThru.DataDirection  = SYM_PASS_THRU_NONE;
     }
-#if __sparc__
+#if __sparc__ || __x86_64__
     passThru.Timeout = timeOut;
 #endif
 
     logMptCommandReq(port, req, reqSize);
 
-#if __sparc__
+#if __sparc__ || __x86_64__
     status = ioctl(port->fileHandle, port->ioctlValue, &passThru);
     if (port->ioctlValue == SYMIOCTL_PASS_THRU_TIMEOUT && status != 0)
     {
@@ -38493,7 +38493,7 @@ concatenateSasFirmwareNvdata(void)
         cde = (CONFIG_DIR_ENTRY *)(nvdata + headOff);
         if (mpi1)
         {
-#if !__linux__ && !__sparc__
+#if !__linux__ && !__sparc__ || __x86_64__
             // safe to use bit field definitions on little-endian machines
             cde->State              = CONFIG_DIR_ENTRY_STATE_IN_USE;
             cde->PageType           = pageType;

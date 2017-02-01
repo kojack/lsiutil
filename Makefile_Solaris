@@ -1,3 +1,3 @@
 lsiutil: lsiutil.c
-	gcc -Wall -O lsiutil.c -o lsiutil -D__sparc__ -ldevinfo
+	gcc -Wall -O lsiutil.c -o lsiutil -D __x86_64__ -D__sparc__ -ldevinfo
 	cp -p lsiutil /usr/bin
